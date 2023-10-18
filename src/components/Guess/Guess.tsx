@@ -1,28 +1,31 @@
 import React from "react";
 import { range } from "../../utils";
-import { CheckedGuess } from "../../types";
+import { checkGuess } from "../../game-helpers";
 
 type CellProps = {
   value: string;
   status: string;
 };
 
-function Cell({ value, status = "" }: CellProps) {
-  return <span className={`cell ${status}`}>{value}</span>;
+function Cell({ value, status }: CellProps) {
+  const className = status ? `cell ${status}` : "cell";
+
+  return <span className={className}>{value}</span>;
 }
 
 type GuessProps = {
-  guess: string;
-  checkedGuess: CheckedGuess[];
+  value: string;
+  answer: string;
 };
 
-function Guess({ guess, checkedGuess }: GuessProps) {
+function Guess({ value, answer }: GuessProps) {
+  const checkedGuess = checkGuess(value, answer);
   return (
     <div className="guess">
       {range(5).map((i: number) => (
         <Cell
           key={`cell-${i}`}
-          value={guess?.[i]}
+          value={checkedGuess?.[i]?.letter}
           status={checkedGuess?.[i]?.status}
         />
       ))}

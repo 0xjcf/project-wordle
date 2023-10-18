@@ -2,25 +2,22 @@ import React from "react";
 import Guess from "../Guess";
 import { range } from "../../utils";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants";
-import { CheckedGuesses, GuessResults } from "../../types";
+import { Guesses } from "../../types";
 
 type GuessResultsProps = {
-  guessResults: GuessResults;
-  checkedGuesses: CheckedGuesses;
+  guesses: Guesses;
+  answer: string;
 };
 
-function GuessResults({ guessResults, checkedGuesses }: GuessResultsProps) {
+function GuessResults({ guesses, answer }: GuessResultsProps) {
   return (
     <div className="guess-results">
       {range(NUM_OF_GUESSES_ALLOWED).map((i: number) => {
-        const { id, guess } = guessResults[i] || {};
-        const key = id || i;
-
         return (
           <Guess
-            key={`guess-${key}`}
-            guess={guess}
-            checkedGuess={checkedGuesses?.[i]}
+            key={`guess-${guesses[i]?.id || i}`}
+            value={guesses[i]?.value}
+            answer={answer}
           />
         );
       })}
