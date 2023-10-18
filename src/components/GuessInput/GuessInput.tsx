@@ -1,20 +1,21 @@
-import React from "react";
+import React, { useState, FormEvent } from "react";
 
 type GuessInputProps = {
+  disabled: boolean;
   handleSubmitGuess: (guess: string) => void;
 };
 
-function GuessInput({ handleSubmitGuess }: GuessInputProps) {
-  const [guess, setGuess] = React.useState("");
+function GuessInput({ disabled, handleSubmitGuess }: GuessInputProps) {
+  const [guess, setGuess] = useState("");
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    handleSubmitGuess(guess);
+    setGuess("");
+  }
+
   return (
-    <form
-      className="guess-input-wrapper"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmitGuess(guess);
-        setGuess("");
-      }}
-    >
+    <form className="guess-input-wrapper" onSubmit={handleSubmit}>
       <label htmlFor="guess-input">Enter guess:</label>
       <input
         id="guess-input"
@@ -26,7 +27,9 @@ function GuessInput({ handleSubmitGuess }: GuessInputProps) {
         }}
         maxLength={5}
         pattern="[A-Z]{5}"
+        title="5 letter word"
         required
+        disabled={disabled}
       />
     </form>
   );

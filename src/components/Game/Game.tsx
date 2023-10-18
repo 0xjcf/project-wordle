@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+
+import GuessInput from "../GuessInput";
+import GuessResults from "../GuessResults";
+import GameWonBanner from "../GameWonBanner";
+import GameLostBanner from "../GameLostBanner";
 
 import { sample } from "../../utils";
 import { WORDS } from "../../data";
-import GuessInput from "../GuessInput";
-import GuessResults from "../GuessResults";
-import Banner from "../Banner";
-import { CheckedGuesses, Guess } from "../../types";
-import { checkGuess } from "../../game-helpers";
+import { GameStatus, Guesses } from "../../types";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants";
 
 // Pick a random word on every pageload.
@@ -15,40 +16,30 @@ const answer = sample(WORDS);
 console.info({ answer });
 
 function Game() {
-  const [guessResults, setGuessResults] = React.useState<Guess[]>([]);
-  const [checkedGuesses, setCheckedGuesses] = React.useState<CheckedGuesses>(
-    []
-  );
-  const [isWinner, setIsWinner] = React.useState(false);
+  const [guesses, setGuesses] = useState<Guesses>([]);
+  const [gameStatus, setGameStatus] = useState<GameStatus>("running");
 
-  const handleSubmitGuess = (guess: string) => {
-    const nextGuess = {
-      guess,
-      id: crypto.randomUUID(),
-    };
-    const nextGuessResults = [...guessResults, nextGuess];
-    setGuessResults(nextGuessResults);
+  const handleSubmitGuess = (guess: Uppercase<string>) => {
+    const nextGuess = { value: guess, id: crypto.randomUUID() };
+    const nextGuesses = [...guesses, nextGuess];
+    setGuesses(nextGuesses);
 
-    const nextCheckedGuesses = [...checkedGuesses, checkGuess(guess, answer)];
-    setCheckedGuesses(nextCheckedGuesses);
-
-    setIsWinner(guess === answer);
+    if (guess === answer) {
+      setGameStatus("won");
+    } else if (nextGuesses.length >= NUM_OF_GUESSES_ALLOWED) {
+      setGameStatus("lost");
+    }
   };
-
-  const variant = isWinner
-    ? "happy"
-    : !isWinner && guessResults.length >= NUM_OF_GUESSES_ALLOWED
-    ? "sad"
-    : null;
 
   return (
     <>
-      <GuessResults
-        guessResults={guessResults}
-        checkedGuesses={checkedGuesses}
+      <GuessResults guesses={guesses} answer={answer} />
+      <GuessInput
+        disabled={gameStatus != "running"}
+        handleSubmitGuess={handleSubmitGuess}
       />
-      <GuessInput handleSubmitGuess={handleSubmitGuess} />
-      <Banner variant={variant} guessResults={guessResults} answer={answer} />
+      {gameStatus === "won" && <GameWonBanner guessCount={guesses.length} />}
+      {gameStatus === "lost" && <GameLostBanner answer={answer} />}
     </>
   );
 }

@@ -1,14 +1,14 @@
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
-export type Status = "correct" | "incorrect" | "misplaced";
+export type GuessStatus = "correct" | "incorrect" | "misplaced";
 
-export type CheckedGuess = { letter: string; status: Status };
+export type CheckedGuess = { letter: string; status: GuessStatus };
 
-export type CheckedGuesses = CheckedGuess[][];
+export type GameStatus = "won" | "lost" | "running";
 
 export type Guess = {
-  guess: string;
+  value: string;
   id: UUID;
 };
 
-export type GuessResults = Guess[];
+export type Guesses = Guess[];
